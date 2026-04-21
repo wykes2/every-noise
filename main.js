@@ -8,6 +8,7 @@ const totalRounds = 10;
 const elements = {
   audio: document.getElementById('audio'),
   playBtn: document.getElementById('play-btn'),
+  audioHint: document.getElementById('audio-hint'),
   optionsContainer: document.getElementById('options'),
   scoreDisplay: document.getElementById('score'),
   roundDisplay: document.getElementById('round'),
