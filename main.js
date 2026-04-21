@@ -76,8 +76,8 @@ async function startNewRound(retryCount = 0) {
     `;
   }
   
-  if (retryCount > 0 && retryCount <= 10) {
-    elements.audioHint.textContent = `Finding track with preview... (${retryCount}/10)`;
+  if (retryCount > 0 && retryCount <= 20) {
+    elements.audioHint.textContent = `Finding track with preview... (${retryCount}/20)`;
   } else if (retryCount === 0) {
     elements.audioHint.textContent = 'Click play to hear the sample';
   }
@@ -116,13 +116,27 @@ async function startNewRound(retryCount = 0) {
     audioLoaded = true;
   }
   
-  if (!audioLoaded && retryCount < 10) {
+  if (!audioLoaded && retryCount < 20) {
     return startNewRound(retryCount + 1);
   }
   
   if (!audioLoaded) {
-    console.error('❌ Could not find a track with preview after 10 attempts');
-    alert('Unable to load audio preview. Please try again.');
+    console.error('❌ Could not find a track with preview after 20 attempts');
+    
+    // Reset UI state
+    elements.playBtn.innerHTML = `
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+      </svg>
+    `;
+    elements.playBtn.disabled = false;
+    elements.audioHint.textContent = 'Click play to hear the sample';
+    
+    // Try again automatically after showing error
+    setTimeout(() => {
+      currentRound--;
+      startNewRound();
+    }, 1000);
     return;
   }
   
