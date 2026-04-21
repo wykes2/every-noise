@@ -63,17 +63,16 @@ async function startNewRound(retryCount = 0) {
   if (retryCount === 0) {
     currentRound++;
     elements.roundDisplay.textContent = `${currentRound}/${totalRounds}`;
-    elements.playBtn.disabled = true;
     
-    // Pause audio and reset play button icon
-    if (!elements.audio.paused) {
-      elements.audio.pause();
-    }
+    // Always pause audio and reset to initial play button state
+    elements.audio.pause();
+    elements.audio.currentTime = 0;
     elements.playBtn.innerHTML = `
       <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <polygon points="5 3 19 12 5 21 5 3"></polygon>
       </svg>
     `;
+    elements.playBtn.disabled = true;
   }
   
   if (retryCount > 0 && retryCount <= 20) {
@@ -208,6 +207,16 @@ function restartGame() {
   elements.gameOver.classList.add('hidden');
   document.getElementById('question').style.display = 'block';
   document.getElementById('audio-section').style.display = 'block';
+  
+  // Reset button to initial play state
+  elements.audio.pause();
+  elements.audio.currentTime = 0;
+  elements.playBtn.innerHTML = `
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <polygon points="5 3 19 12 5 21 5 3"></polygon>
+    </svg>
+  `;
+  
   startNewRound();
 }
 
