@@ -64,6 +64,16 @@ async function startNewRound(retryCount = 0) {
     currentRound++;
     elements.roundDisplay.textContent = `${currentRound}/${totalRounds}`;
     elements.playBtn.disabled = true;
+    
+    // Pause audio and reset play button icon
+    if (!elements.audio.paused) {
+      elements.audio.pause();
+    }
+    elements.playBtn.innerHTML = `
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+      </svg>
+    `;
   }
   
   if (retryCount > 0 && retryCount <= 10) {
