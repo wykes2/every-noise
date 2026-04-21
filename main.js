@@ -72,7 +72,7 @@ async function startNewRound(retryCount = 0) {
   if (currentGenre.spotifyTrackId) {
     try {
       console.log(`Fetching preview for: ${currentGenre.name} (${currentGenre.spotifyTrackId})`);
-      const response = await fetch(`/api/preview/${currentGenre.spotifyTrackId}`);
+      const response = await fetch(`/api/preview?trackId=${currentGenre.spotifyTrackId}`);
       
       if (!response.ok) {
         console.error(`API responded with status: ${response.status}`);
