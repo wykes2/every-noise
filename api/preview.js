@@ -24,8 +24,6 @@ export default async function handler(req, res) {
   try {
     const url = `https://everynoise.com/spotproxy.cgi?track=${trackId}`;
     
-    console.log(`Fetching preview for track: ${trackId}`);
-    
     const response = await axios.get(url, {
       httpsAgent: new https.Agent({
         rejectUnauthorized: false
@@ -36,20 +34,16 @@ export default async function handler(req, res) {
       timeout: 10000
     });
 
-    console.log(`Response received:`, response.data);
-
-    if (!response.data.preview_url) {
-      console.log(`⚠️  No preview URL for track ${trackId}`);
+    if (!response.data || !response.data.preview_url) {
       return res.status(404).json({ error: 'No preview URL available' });
     }
 
-    res.setHeader('Cache-Control', 's-maxage=86400, stale-while-revalidate');
+    res.setHeader('Cache-Control', 's-maxage=3600, stale-while-revalidate');
     res.status(200).json(response.data);
   } catch (error) {
-    console.error('❌ Error fetching preview:', error.message);
+    console.error('Error fetching preview:', error.message);
     res.status(500).json({ 
-      error: 'Failed to fetch preview URL',
-      details: error.message 
+      error: 'Failed to fetch preview URL'
     });
   }
 }

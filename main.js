@@ -59,8 +59,17 @@ async function startNewRound(retryCount = 0) {
     return;
   }
   
-  currentRound++;
-  elements.roundDisplay.textContent = `${currentRound}/${totalRounds}`;
+  if (retryCount === 0) {
+    currentRound++;
+    elements.roundDisplay.textContent = `${currentRound}/${totalRounds}`;
+    elements.playBtn.disabled = true;
+  }
+  
+  if (retryCount > 0 && retryCount <= 10) {
+    elements.audioHint.textContent = `Finding track with preview... (${retryCount}/10)`;
+  } else if (retryCount === 0) {
+    elements.audioHint.textContent = 'Click play to hear the sample';
+  }
   
   currentGenre = genres[Math.floor(Math.random() * genres.length)];
   
@@ -71,28 +80,24 @@ async function startNewRound(retryCount = 0) {
   
   if (currentGenre.spotifyTrackId) {
     try {
-      console.log(`Fetching preview for: ${currentGenre.name} (${currentGenre.spotifyTrackId})`);
       const response = await fetch(`/api/preview?trackId=${currentGenre.spotifyTrackId}`);
       
       if (!response.ok) {
-        console.error(`API responded with status: ${response.status}`);
-        const errorData = await response.json();
-        console.error('Error details:', errorData);
+        if (response.status === 404) {
+          console.warn(`⚠️ No preview available for "${currentGenre.name}", trying another...`);
+        }
       } else {
         const data = await response.json();
-        console.log('API response:', data);
         
         if (data.preview_url) {
           elements.audio.src = data.preview_url;
           elements.audio.load();
           audioLoaded = true;
-          console.log(`✅ Audio loaded for: ${currentGenre.name}`);
-        } else {
-          console.warn(`No preview URL found for "${currentGenre.name}", trying another genre...`);
+          console.log(`✅ Audio loaded: ${currentGenre.name}`);
         }
       }
     } catch (error) {
-      console.error('Error fetching preview:', error);
+      console.warn(`Failed to fetch preview for "${currentGenre.name}":`, error.message);
     }
   } else if (currentGenre.audioUrl) {
     elements.audio.src = currentGenre.audioUrl;
@@ -100,11 +105,17 @@ async function startNewRound(retryCount = 0) {
     audioLoaded = true;
   }
   
-  if (!audioLoaded && retryCount < 5) {
-    currentRound--;
+  if (!audioLoaded && retryCount < 10) {
     return startNewRound(retryCount + 1);
   }
   
+  if (!audioLoaded) {
+    console.error('❌ Could not find a track with preview after 10 attempts');
+    alert('Unable to load audio preview. Please try again.');
+    return;
+  }
+  
+  elements.audioHint.textContent = 'Click play to hear the sample';
   renderOptions();
   resetFeedback();
   
