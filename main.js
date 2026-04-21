@@ -71,14 +71,25 @@ async function startNewRound(retryCount = 0) {
   
   if (currentGenre.spotifyTrackId) {
     try {
+      console.log(`Fetching preview for: ${currentGenre.name} (${currentGenre.spotifyTrackId})`);
       const response = await fetch(`/api/preview/${currentGenre.spotifyTrackId}`);
-      const data = await response.json();
-      if (data.preview_url) {
-        elements.audio.src = data.preview_url;
-        elements.audio.load();
-        audioLoaded = true;
+      
+      if (!response.ok) {
+        console.error(`API responded with status: ${response.status}`);
+        const errorData = await response.json();
+        console.error('Error details:', errorData);
       } else {
-        console.warn(`No preview URL found for "${currentGenre.name}", trying another genre...`);
+        const data = await response.json();
+        console.log('API response:', data);
+        
+        if (data.preview_url) {
+          elements.audio.src = data.preview_url;
+          elements.audio.load();
+          audioLoaded = true;
+          console.log(`✅ Audio loaded for: ${currentGenre.name}`);
+        } else {
+          console.warn(`No preview URL found for "${currentGenre.name}", trying another genre...`);
+        }
       }
     } catch (error) {
       console.error('Error fetching preview:', error);
