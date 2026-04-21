@@ -1,0 +1,32 @@
+[
+  {
+    "name": "pop",
+    "position": { "top": 4997, "left": 783 },
+    "color": "rgb(152, 179, 108)",
+    "audioUrl": "https://p.scdn.co/mp3-preview/sample1"
+  },
+  {
+    "name": "rock",
+    "position": { "top": 11552, "left": 563 },
+    "color": "rgb(98, 120, 165)",
+    "audioUrl": "https://p.scdn.co/mp3-preview/sample2"
+  },
+  {
+    "name": "jazz",
+    "position": { "top": 8234, "left": 1456 },
+    "color": "rgb(210, 145, 88)",
+    "audioUrl": "https://p.scdn.co/mp3-preview/sample3"
+  },
+  {
+    "name": "electronic",
+    "position": { "top": 6789, "left": 2341 },
+    "color": "rgb(180, 98, 203)",
+    "audioUrl": "https://p.scdn.co/mp3-preview/sample4"
+  },
+  {
+    "name": "hip hop",
+    "position": { "top": 5432, "left": 987 },
+    "color": "rgb(145, 201, 112)",
+    "audioUrl": "https://p.scdn.co/mp3-preview/sample5"
+  }
+]
