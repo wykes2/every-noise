@@ -38,6 +38,7 @@ async function loadGenres() {
     }
     
     console.log(`Loaded ${genres.length} genres with audio`);
+    incrementRound();  // Start at round 1
     startNewRound();
   } catch (error) {
     console.error('Error loading genres:', error);
@@ -54,22 +55,21 @@ function getRandomGenres(count, excludeGenre = null) {
   return shuffled.slice(0, count);
 }
 
-async function startNewRound(retryCount = 0, skipIncrement = false) {
+function incrementRound() {
+  currentRound++;
+  elements.roundDisplay.textContent = `${currentRound}/${totalRounds}`;
+  console.log(`📍 Round is now: ${currentRound}/${totalRounds}`);
+}
+
+async function startNewRound(retryCount = 0) {
+  // Check if game is over
   if (currentRound >= totalRounds) {
     endGame();
     return;
   }
   
+  // Only reset UI and increment on the first attempt (not on retries)
   if (retryCount === 0) {
-    // Only increment if not skipping (for retry scenarios)
-    if (!skipIncrement) {
-      currentRound++;
-      elements.roundDisplay.textContent = `${currentRound}/${totalRounds}`;
-      console.log(`📍 Round incremented to: ${currentRound}/${totalRounds}`);
-    } else {
-      console.log(`⏭️ Skipping increment, staying at: ${currentRound}/${totalRounds}`);
-    }
-    
     // Always pause audio and reset to initial play button state
     elements.audio.pause();
     elements.audio.currentTime = 0;
@@ -79,12 +79,12 @@ async function startNewRound(retryCount = 0, skipIncrement = false) {
       </svg>
     `;
     elements.playBtn.disabled = true;
+    elements.audioHint.textContent = 'Click play to hear the sample';
   }
   
+  // Show loading indicator during retries
   if (retryCount > 0 && retryCount <= 20) {
     elements.audioHint.textContent = `Finding track with preview... (${retryCount}/20)`;
-  } else if (retryCount === 0) {
-    elements.audioHint.textContent = 'Click play to hear the sample';
   }
   
   currentGenre = genres[Math.floor(Math.random() * genres.length)];
@@ -137,9 +137,9 @@ async function startNewRound(retryCount = 0, skipIncrement = false) {
     elements.playBtn.disabled = false;
     elements.audioHint.textContent = 'Click play to hear the sample';
     
-    // Try again automatically after showing error (pass retryCount to avoid re-incrementing)
+    // Try again automatically after showing error
     setTimeout(() => {
-      startNewRound(0, true);
+      startNewRound(0);
     }, 1000);
     return;
   }
@@ -222,6 +222,7 @@ function restartGame() {
     </svg>
   `;
   
+  incrementRound();  // Start at round 1
   startNewRound();
 }
 
@@ -252,7 +253,12 @@ elements.audio.addEventListener('ended', () => {
   `;
 });
 
-elements.nextBtn.addEventListener('click', startNewRound);
+function nextRound() {
+  incrementRound();
+  startNewRound();
+}
+
+elements.nextBtn.addEventListener('click', nextRound);
 elements.restartBtn.addEventListener('click', restartGame);
 
 loadGenres();
