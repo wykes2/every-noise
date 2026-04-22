@@ -65,6 +65,9 @@ async function startNewRound(retryCount = 0, skipIncrement = false) {
     if (!skipIncrement) {
       currentRound++;
       elements.roundDisplay.textContent = `${currentRound}/${totalRounds}`;
+      console.log(`📍 Round incremented to: ${currentRound}/${totalRounds}`);
+    } else {
+      console.log(`⏭️ Skipping increment, staying at: ${currentRound}/${totalRounds}`);
     }
     
     // Always pause audio and reset to initial play button state
