@@ -54,15 +54,18 @@ function getRandomGenres(count, excludeGenre = null) {
   return shuffled.slice(0, count);
 }
 
-async function startNewRound(retryCount = 0) {
+async function startNewRound(retryCount = 0, skipIncrement = false) {
   if (currentRound >= totalRounds) {
     endGame();
     return;
   }
   
   if (retryCount === 0) {
-    currentRound++;
-    elements.roundDisplay.textContent = `${currentRound}/${totalRounds}`;
+    // Only increment if not skipping (for retry scenarios)
+    if (!skipIncrement) {
+      currentRound++;
+      elements.roundDisplay.textContent = `${currentRound}/${totalRounds}`;
+    }
     
     // Always pause audio and reset to initial play button state
     elements.audio.pause();
@@ -131,10 +134,9 @@ async function startNewRound(retryCount = 0) {
     elements.playBtn.disabled = false;
     elements.audioHint.textContent = 'Click play to hear the sample';
     
-    // Try again automatically after showing error
+    // Try again automatically after showing error (pass retryCount to avoid re-incrementing)
     setTimeout(() => {
-      currentRound--;
-      startNewRound();
+      startNewRound(0, true);
     }, 1000);
     return;
   }
